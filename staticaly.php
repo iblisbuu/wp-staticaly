@@ -73,9 +73,24 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-staticaly.php';
  *
  * @since    1.0.0
  */
+require plugin_dir_path( __FILE__ ) . 'includes/class-staticaly-cdn.php';
+
 function run_staticaly() {
 
 	$plugin = new Staticaly();
+	$converter = new Staticaly_CDN();
+
+	foreach (array(
+		'theme_root_uri',
+		'plugins_url',
+		'script_loader_src',
+		'style_loader_src'
+	) as $hook) {
+		$plugin->loader->add_filter($hook, $converter, 'convert_core_url', 99, 1);
+		$plugin->loader->add_filter($hook, $converter, 'convert_plugins_url', 99, 1);
+		// $plugin->loader->add_filter($hook, $converter, 'convert_themes_url', 99, 1);
+	}
+
 	$plugin->run();
 
 }
